@@ -4,44 +4,86 @@
  */
 public final class Carta implements Comparable<Carta> {
 
-    private final ...;
-    private final  ...;
+    private final Palo palo;
+    private final int numero;
 
     /**
      * @throws IllegalArgumentException si el palo es null o el número no está en {1..7, 10, 11, 12}
      */
     public Carta(Palo palo, int numero) {
+        if (palo==null || (numero <1 || numero >12 || (numero > 7 && numero <10))) throw new IllegalArgumentException();
+        this.palo=palo;
+        this.numero=numero;
 
     }
 
     public Palo getPalo() {
-        return null;
+        return this.palo;
     }
 
     public int getNumero() {
 
-        return 0;
+        return this.numero;
     }
 
 
     public int getOrden() {
-        return 0;
+        if (this.numero>7) return this.numero-2;
+        return this.numero;
     }
 
 
     public boolean esSiguienteDe(Carta otra) {
+        if(this.palo==otra.getPalo() && this.numero==otra.getNumero()+1) return true;
         return false;
     }
 
 
     @Override
     public int compareTo(Carta otra) {
-
+        int compPalo = this.palo.compareTo(otra.getPalo());
+        if (compPalo != 0) {
+            return compPalo;
+        }
+        return Integer.compare(this.getOrden(), otra.getOrden());
     }
 
     @Override
     public String toString() {
-
+        String carta="";
+        switch (this.numero){
+            case 1:
+                carta="As de "+this.palo.toString();
+                break;
+            case 2:
+                carta="Dos de "+this.palo.toString();
+                break;
+            case 3:
+                carta="Tres de "+this.palo.toString();
+                break;
+            case 4:
+                carta="Cuatro de "+this.palo.toString();
+                break;
+            case 5:
+                carta="Cinco de "+this.palo.toString();
+                break;
+            case 6:
+                carta="Seis de "+this.palo.toString();
+                break;
+            case 7:
+                carta="Siete de "+this.palo.toString();
+                break;
+            case 10:
+                carta="Sota de "+this.palo.toString();
+                break;
+            case 11:
+                carta="Caballo de "+this.palo.toString();
+                break;
+            case 12:
+                carta="Rey de "+this.palo.toString();
+                break;
+        }
+        return carta;
     }
 
     /** Dos cartas son iguales si tienen el mismo palo y el mismo número. */
