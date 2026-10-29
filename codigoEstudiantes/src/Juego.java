@@ -31,15 +31,38 @@ public class Juego {
     }
 
     private void validarJugadores(List<Jugador> jugadores) {
+        if (jugadores == null || jugadores.size() < MIN_JUGADORES || jugadores.size() > MAX_JUGADORES) throw new IllegalArgumentException();
 
+        Set<String> nombres = new HashSet<>();
+
+        for (Jugador j : jugadores) {
+            if (j == null || nombres.contains(j.getNombre())) throw new IllegalArgumentException();
+
+            nombres.add(j.getNombre());
+        }
     }
 
     private List<Carta> crearBarajaSinCartaInicial() {
+        List<Carta> baraja = new ArrayList<>();
+        int[] numeros = {1, 2, 3, 4, 5, 6, 7, 10, 11, 12};
 
-        return null;
+        for (Palo p : Palo.values()) {
+            for (int num : numeros) {
+                Carta c = new Carta(p, num);
+                if (!c.equals(CARTA_INICIAL)) {
+                    baraja.add(c);
+                }
+            }
+        }
+
+        return baraja;
     }
     private void validarBaraja(List<Carta> baraja) {
+        if (baraja == null || baraja.size() != 39) throw new IllegalArgumentException();
 
+        Set<Carta> sinRepetidos = new HashSet<>(baraja);
+
+        if (sinRepetidos.size() != 39) throw new IllegalArgumentException();
     }
 
     private void iniciar(List<Jugador> jugadores, List<Carta> baraja) {
@@ -57,25 +80,71 @@ public class Juego {
 
 
     private void repartirCartas(List<Carta> baraja) {
-
+        for (int i = 0; i < CARTAS_POR_JUGADOR; i++) {
+            for (Jugador j : jugadores) {
+                Carta c = baraja.remove(0);
+                j.recibir(c);
+            }
+        }
     }
 
     private void jugarCarta(Jugador jugador, Carta c) {
-
+        mesa.colocar(c);
+        jugador.eliminar(c);
     }
 
 
     private boolean robarHastaColocar(Jugador jugador, boolean mostrarCartas) {
-        return false;
+        int robadas = 0;
+        boolean colocada = false;
+        Carta elegida = null;
+
+        while (!mazo.isEmpty() && !colocada) {
+            Carta c = mazo.pop();
+            robadas++;
+            if (mostrarCartas) {
+                System.out.println("  Roba: " + c);
+            }
+            if (mesa.puedeColocar(c)) {
+                jugador.recibir(c);
+                jugarCarta(jugador, c);
+                colocada = true;
+                elegida = c;
+            } else {
+                jugador.recibir(c);
+            }
+        }
+
+        System.out.println("Ha robado " + robadas + " cartas.");
+        if (colocada) {
+            System.out.println("Juega: " + elegida);
+        }
+        return colocada;
     }
 
     private void pasarTurno(Jugador jugador) {
-
+        if (jugador.numCartas() > 0) {
+            turno++;
+            if (turno == jugadores.size()) {
+                turno = 0;
+            }
+        }
     }
 
 
     private void comprobarJugador (Jugador jugador) {
+        if (jugador == null) throw new IllegalArgumentException();
 
+        boolean estaEnPartida = false;
+
+        for (Jugador j : jugadores) {
+            if (j == jugador) {
+                estaEnPartida = true;
+                break;
+            }
+        }
+        if (!estaEnPartida) throw new IllegalArgumentException();
+        if (getGanador() != null || jugadores.get(turno) != jugador) throw new IllegalStateException();
     }
 
     // ------------------------------------------------------------------

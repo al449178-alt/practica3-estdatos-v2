@@ -3,38 +3,55 @@ import java.util.*;
 public class Jugador {
     //parte privada completar
     private String nombre;
+    private List<Carta> mano;
 
     public Jugador(String nombre) {
-
+        if (nombre == null || nombre.trim().isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        this.nombre = nombre;
+        this.mano = new ArrayList<>();
     }
 
 
     public void recibir(Carta c) {
-
+        if (c == null) throw new IllegalArgumentException();
+        mano.add(c);
+        mano.sort(null);
     }
 
 
     public boolean eliminar(Carta c) {
-        return true;
+        if (c == null) throw new IllegalArgumentException();
+        return mano.remove(c);
     }
 
 
     public int numCartas() {
-        return 0;
+        return mano.size();
     }
 
     public List<Carta> getMano() {
-        return null;
+        return new ArrayList<>(mano);
     }
 
     public boolean puedeJugar (Mesa mesa) {
-
+        for (Carta c : mano) {
+            if (mesa != null && mesa.puedeColocar(c)) return true;
+        }
         return false;
     }
 
     public List<Carta> cartasJugables (Mesa mesa) {
-
-        return null;
+        List<Carta> jugables = new ArrayList<>();
+        if (mesa != null) {
+            for (Carta c : mano) {
+                if (mesa.puedeColocar(c)) {
+                    jugables.add(c);
+                }
+            }
+        }
+        return jugables;
     }
 
 
